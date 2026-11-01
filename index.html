@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -5,55 +6,171 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#e7f1f4">
   <meta name="robots" content="noarchive">
+
+  <!-- GitHub Pages 快取設定 -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
+
   <title>年年の存鑽存歌</title>
-  <link rel="icon" type="image/svg+xml" href="./assets/fish.svg?v=20261030m">
-  <link rel="stylesheet" href="./style-20261030m.css">
-  <script defer src="./script-20261030p.js"></script>
+
+  <!-- 網站圖示 -->
+  <link
+    rel="icon"
+    type="image/svg+xml"
+    href="./assets/fish.svg?v=20261030m"
+  >
+
+  <!-- 網站樣式：更新版本避免讀取舊 CSS -->
+  <link
+    rel="stylesheet"
+    href="./style-20261030m.css?v=20261101-time2"
+  >
+
+  <!-- 網站功能：更新版本避免讀取舊 JS -->
+  <script
+    defer
+    src="./script-20261030p.js?v=20261101-time2"
+  ></script>
 </head>
+
 <body>
+
+  <!-- 背景漂浮圖案 -->
   <div class="floating-icons" aria-hidden="true">
     <span style="--x:8%;--duration:19s;--delay:-4s">✧</span>
     <span style="--x:24%;--duration:24s;--delay:-15s">♡</span>
     <span style="--x:72%;--duration:21s;--delay:-8s">✦</span>
     <span style="--x:91%;--duration:26s;--delay:-18s">☁</span>
   </div>
+
   <main class="page-shell">
+
+    <!-- 網站標題與搜尋區 -->
     <header class="panel hero">
-      <div class="sky-decor" aria-hidden="true">☁️ ✦ ✧ ♡ ☁️ ✧</div>
+
+      <div class="sky-decor" aria-hidden="true">
+        ☁️ ✦ ✧ ♡ ☁️ ✧
+      </div>
+
       <div class="seal" aria-label="年年">年</div>
-      <p class="eyebrow">A LITTLE TREASURE BOX</p>
-      <h1 id="siteTitle" class="sheet-copy-pending"></h1>
-      <p class="subtitle sheet-copy-pending" id="siteSubtitle" aria-live="off"></p>
-      <section class="search-card" aria-label="搜尋資料">
-        <label for="searchInput">懶得找就來查查看</label>
+
+      <p class="eyebrow">
+        A LITTLE TREASURE BOX
+      </p>
+
+      <!-- 網站標題由 Google 試算表讀取 -->
+      <h1
+        id="siteTitle"
+        class="sheet-copy-pending"
+      ></h1>
+
+      <!-- 網站小標題由 Google 試算表讀取 -->
+      <p
+        class="subtitle sheet-copy-pending"
+        id="siteSubtitle"
+        aria-live="off"
+      ></p>
+
+      <!-- 搜尋功能 -->
+      <section
+        class="search-card"
+        aria-label="搜尋資料"
+      >
+
+        <label for="searchInput">
+          懶得找就來查查看
+        </label>
+
         <div class="search-row">
-          <input id="searchInput" type="search" placeholder="輸入存鑽老闆名稱…" autocomplete="off">
-          <button id="clearBtn" type="button">清除搜尋</button>
+
+          <input
+            id="searchInput"
+            type="search"
+            placeholder="輸入存鑽老闆名稱…"
+            autocomplete="off"
+          >
+
+          <button
+            id="clearBtn"
+            type="button"
+          >
+            清除搜尋
+          </button>
+
         </div>
-        <p class="result-text" id="resultText" role="status" aria-live="polite">資料載入中…</p>
+
+        <p
+          class="result-text"
+          id="resultText"
+          role="status"
+          aria-live="polite"
+        >
+          資料載入中…
+        </p>
+
       </section>
+
     </header>
 
+    <!-- 資料表格 -->
     <section class="panel content-panel">
+
       <div class="table-wrap">
+
         <table>
-          <thead><tr id="tableHead"></tr></thead>
+
+          <!--
+            表頭由 JavaScript 自動建立
+            顯示欄位：
+            存鑽老闆、存鑽數量、存歌數量、
+            總數、更新時間
+          -->
+          <thead>
+            <tr id="tableHead"></tr>
+          </thead>
+
+          <!-- 表格資料由 Google 試算表取得 -->
           <tbody id="tableBody">
-            <tr class="empty-row"><td colspan="5">資料載入中…</td></tr>
+
+            <tr class="empty-row">
+              <td colspan="5">
+                資料載入中…
+              </td>
+            </tr>
+
           </tbody>
+
         </table>
+
       </div>
+
     </section>
 
+    <!-- 網站頁尾 -->
     <footer class="site-footer">
-      <p>☁️ 謝謝大家的支持 ｜ 年年の存鑽存歌</p>
-      <p>© 2026 LionLionTomato. All Rights Reserved.</p>
-      <p>本網站資料僅供個人收藏與紀錄參考，實際內容請以作者公告及官方資訊為準。</p>
-      <p><a href="./copyright.html?v=20261030m">著作權聲明與使用條款</a></p>
+
+      <p>
+        ☁️ 謝謝大家的支持 ｜ 年年の存鑽存歌
+      </p>
+
+      <p>
+        © 2026 LionLionTomato. All Rights Reserved.
+      </p>
+
+      <p>
+        本網站資料僅供個人收藏與紀錄參考，實際內容請以作者公告及官方資訊為準。
+      </p>
+
+      <p>
+        <a href="./copyright.html?v=20261030m">
+          著作權聲明與使用條款
+        </a>
+      </p>
+
     </footer>
+
   </main>
+
 </body>
 </html>
