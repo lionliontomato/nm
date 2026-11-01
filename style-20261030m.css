@@ -1,8 +1,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Noto+Serif+TC:wght@400;600;700;900&display=swap');
 
-/* ===== 全站基本配色 ===== */
-
 :root{
   --sky-50:#f4fbff;
   --sky-100:#e8f7ff;
@@ -27,8 +25,6 @@ html{
   scroll-behavior:smooth;
 }
 
-/* ===== 網站背景 ===== */
-
 body{
   margin:0;
   min-height:100vh;
@@ -48,7 +44,7 @@ body:before{
   z-index:0;
 }
 
-/* ===== 背景漂浮圖案 ===== */
+/* 背景漂浮動畫 */
 
 .floating-icons{
   position:fixed;
@@ -74,22 +70,19 @@ body:before{
     transform:translateY(0) rotate(0);
     opacity:0;
   }
-
   12%{
     opacity:.25;
   }
-
   70%{
     opacity:.22;
   }
-
   100%{
     transform:translateY(-115vh) rotate(28deg);
     opacity:0;
   }
 }
 
-/* ===== 頁面主體 ===== */
+/* 網頁主體 */
 
 .page-shell{
   position:relative;
@@ -108,7 +101,7 @@ body:before{
   border-radius:var(--radius);
 }
 
-/* ===== 網站標題區 ===== */
+/* 網站標題 */
 
 .hero{
   padding:clamp(30px,6vw,68px);
@@ -197,7 +190,7 @@ h1{
   line-height:1.8;
 }
 
-/* ===== 搜尋區 ===== */
+/* 搜尋區域 */
 
 .search-card{
   position:relative;
@@ -244,8 +237,6 @@ input[type=search]:focus{
   box-shadow:0 0 0 4px rgba(96,184,235,.2);
 }
 
-/* ===== 按鈕 ===== */
-
 button{
   border:0;
   border-radius:18px;
@@ -289,7 +280,7 @@ button:hover{
   font-size:14px;
 }
 
-/* ===== 資料表格外框 ===== */
+/* 表格區域 */
 
 .content-panel{
   margin-top:18px;
@@ -330,8 +321,6 @@ button:hover{
   box-shadow:0 0 0 4px rgba(118,184,166,.14);
 }
 
-/* ===== 表格主體 ===== */
-
 .table-wrap{
   overflow:auto;
   border-radius:22px;
@@ -367,67 +356,30 @@ tbody tr:hover{
   background:rgba(231,248,255,.58);
 }
 
-/* ===== 五個欄位的標題配色 ===== */
+/* 表頭配色 */
 
-/* 存鑽老闆：天空藍 */
 .col-name{
   background:linear-gradient(135deg,#6b9fba,#8ebbd0);
 }
 
-/* 存鑽數量：湖水藍 */
 .col-diamond{
   background:linear-gradient(135deg,#70b7c3,#a8dce0);
 }
 
-/* 存歌數量：薰衣草藍 */
 .col-song{
   background:linear-gradient(135deg,#8daed7,#c2d5ee);
 }
 
-/* 總數：柔和香檳金 */
 .col-total{
   background:linear-gradient(135deg,#d9bf83,#f1dfb3);
 }
-
-/*
- * 更新時間：薄荷綠
- * 位於「總數」右側
- */
-.col-updated{
-  background:linear-gradient(135deg,#72b5a5,#a8d9cb);
-  color:#fff;
-  min-width:165px;
-}
-
-/* ===== 表格內的資料樣式 ===== */
 
 .name-cell{
   font-weight:900;
   color:#315e7b;
 }
 
-/*
- * 更新時間資料格
- * 淺薄荷綠背景
- * 日期、時間保持同一行
- */
-.updated-cell{
-  background:rgba(219,242,235,.62);
-  color:#376f67;
-  font-family:"Noto Sans TC",sans-serif;
-  font-size:14px;
-  font-weight:700;
-  letter-spacing:.01em;
-  white-space:nowrap;
-  font-variant-numeric:tabular-nums;
-}
-
-/* 滑鼠移到該列時，更新時間稍微加深 */
-tbody tr:hover .updated-cell{
-  background:rgba(190,230,218,.80);
-}
-
-/* ===== 沒有資料時的提示 ===== */
+/* 空資料提示 */
 
 .empty-row td{
   padding:36px 16px;
@@ -443,7 +395,7 @@ tbody tr:hover .updated-cell{
   margin:14px 4px;
 }
 
-/* ===== Google 試算表連結 ===== */
+/* 試算表連結樣式 */
 
 .sheet-link-wrap{
   text-align:center;
@@ -466,7 +418,7 @@ tbody tr:hover .updated-cell{
   transform:translateY(-1px);
 }
 
-/* ===== 網站頁尾 ===== */
+/* 網站頁尾 */
 
 .site-footer{
   position:relative;
@@ -496,10 +448,9 @@ tbody tr:hover .updated-cell{
   opacity:.75;
 }
 
-/* ===== 手機版排版 ===== */
+/* 手機版 */
 
 @media(max-width:640px){
-
   body{
     background-attachment:scroll;
     background-position:center top;
@@ -555,15 +506,46 @@ tbody tr:hover .updated-cell{
   .content-panel{
     padding:18px 14px;
   }
+}
 
-  /* 手機版更新時間保持清楚可讀 */
-  .col-updated{
-    min-width:150px;
+/* 更新時間欄位
+   深薄荷綠表頭、淺薄荷綠資料背景
+   同時設定第五欄位置，避免表頭空白配色
+*/
+
+thead th.col-updated,
+thead th:nth-child(5){
+  background:linear-gradient(135deg,#518e87,#88c0b2);
+  color:#ffffff;
+  min-width:165px;
+  font-weight:800;
+  text-align:center;
+}
+
+tbody tr:not(.empty-row) td.updated-cell,
+tbody tr:not(.empty-row) td:nth-child(5){
+  background:rgba(220,243,236,.7);
+  color:#31665d;
+  font-family:"Noto Sans TC",sans-serif;
+  font-size:14px;
+  font-weight:700;
+  white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+}
+
+tbody tr:not(.empty-row):hover td.updated-cell,
+tbody tr:not(.empty-row):hover td:nth-child(5){
+  background:rgba(193,231,219,.9);
+}
+
+@media(max-width:640px){
+  thead th.col-updated,
+  thead th:nth-child(5){
+    min-width:155px;
   }
 
-  .updated-cell{
+  tbody tr:not(.empty-row) td.updated-cell,
+  tbody tr:not(.empty-row) td:nth-child(5){
     font-size:13px;
-    padding:13px 10px;
   }
-
 }
