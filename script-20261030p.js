@@ -6,9 +6,8 @@
   const SHEET_ID = "18Di64_ylwV6ZlyB_siNu9j7xxImIfr1_QBGTrrRSmos";
   const SHEET_GID = "0";
 
-  // 網頁顯示 A、B、C、E、F
-  // D 欄存爆數量仍保留在試算表，不顯示於網站
-  const SOURCE_COLUMNS = [0, 1, 2, 4, 5];
+  // 網頁顯示 A、B、C、E、F，不顯示 D 欄
+  const SOURCE_COLUMN_INDEXES = [0, 1, 2, 4, 5];
 
   const DEFAULT_HEADERS = [
     "存鑽老闆",
@@ -18,13 +17,6 @@
     "更新時間"
   ];
 
-  const DEFAULT_TITLE = "年年の存鑽存歌";
-  const DEFAULT_SUBTITLE = "";
-
-  // 網站標題設定：L 欄設定名稱、M 欄設定內容
-  const LABEL_COLUMN_INDEX = 11;
-  const VALUE_COLUMN_INDEX = 12;
-
   const COLUMN_CLASSES = [
     "col-name",
     "col-diamond",
@@ -33,8 +25,12 @@
     "col-updated"
   ];
 
+  // 網站標題設定：L、M 欄
+  const LABEL_COLUMN_INDEX = 11;
+  const VALUE_COLUMN_INDEX = 12;
+
   const fmt = new Intl.NumberFormat("zh-Hant-TW");
-  const $ = (selector) => document.querySelector(selector);
+  const $ = selector => document.querySelector(selector);
 
   let headers = [...DEFAULT_HEADERS];
   let records = [];
@@ -47,33 +43,7 @@
       .toLocaleLowerCase("zh-Hant-TW");
   }
 
-  function isConfigLabel(value, kind) {
-    const text = normalize(value).replace(/[\s：:（）()]/g, "");
-
-    const labels = kind === "title"
-      ? [
-          "網站標題",
-          "網頁標題",
-          "標題",
-          "sitetitle",
-          "websitetitle",
-          "title"
-        ]
-      : [
-          "網站小標題",
-          "網頁小標題",
-          "小標題",
-          "副標題",
-          "網站副標題",
-          "sitesubtitle",
-          "websitesubtitle",
-          "subtitle"
-        ];
-
-    return labels.includes(text);
-  }
-
-  // 從試算表讀取網站標題與小標題
+  // 網站標題及小標題
   function applySiteCopy(rows) {
     let title = null;
     let subtitle = null;
@@ -129,16 +99,21 @@
       }
     }
 
-    // 設定欄移位時的備援搜尋
+    // 標題設定欄位移動時的備援
     if (title === null || subtitle === null) {
       for (const row of rows) {
         const cells = Array.isArray(row) ? row : [];
 
         for (let i = 0; i < cells.length - 1; i++) {
           const label = normalizeLabel(cells[i]);
-          const value = String(cells[i + 1] ?? "").trim();
+          const value = String(
+            cells[i + 1] ?? ""
+          ).trim();
 
-          if (title === null && titleLabels.has(label)) {
+          if (
+            title === null &&
+            titleLabels.has(label)
+          ) {
             title = value;
           }
 
@@ -152,12 +127,9 @@
       }
     }
 
-    const finalTitle =
-      title !== null && title !== "" ? title : null;
-
-    if (finalTitle !== null) {
-      $("#siteTitle").textContent = finalTitle;
-      document.title = finalTitle;
+    if (title !== null && title !== "") {
+      $("#siteTitle").textContent = title;
+      document.title = title;
 
       $("#siteTitle").classList.remove(
         "sheet-copy-pending"
@@ -173,7 +145,7 @@
     }
   }
 
-  // 數字轉換
+  // 數字格式
   function toValue(value) {
     const cleaned = String(value ?? "")
       .replace(/,/g, "")
@@ -188,31 +160,7 @@
       : cleaned;
   }
 
-  // 更新時間保持試算表原有日期格式
-  function toUpdateTime(value) {
-    const text = String(value ?? "").trim();
-
-    const match =
-      /^Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?\)$/.exec(text);
-
-    if (!match) return text;
-
-    const pad = number =>
-      String(number).padStart(2, "0");
-
-    const day =
-      `${match[1]}/${pad(Number(match[2]) + 1)}/${pad(match[3])}`;
-
-    if (match[4] === undefined) {
-      return day;
-    }
-
-    return (
-      `${day} ${pad(match[4])}:${pad(match[5])}:${pad(match[6])}`
-    );
-  }
-
-  // 避免試算表文字影響 HTML
+  // HTML 文字安全處理
   function escapeHtml(value) {
     return String(value ?? "")
       .replace(/&/g, "&amp;")
@@ -222,7 +170,29 @@
       .replace(/'/g, "&#39;");
   }
 
-  // 解析 Google Sheets JSONP 資料
+  // Google 試算表日期格式處理
+  function displaySheetDate(value) {
+    const text = String(value ?? "").trim();
+
+    const match =
+      /^Date\((\d{4}),(\d{1,2}),(\d{1,2})(?:,(\d{1,2}),(\d{1,2})(?:,(\d{1,2}))?)?\)$/.exec(text);
+
+    // 已是日期文字，就直接使用
+    if (!match) return text;
+
+    const date =
+      `${match[1]}/${Number(match[2]) + 1}/${Number(match[3])}`;
+
+    if (match[4] === undefined) {
+      return date;
+    }
+
+    return (
+      `${date} ${match[4].padStart(2, "0")}:${match[5].padStart(2, "0")}`
+    );
+  }
+
+  // JSONP 資料解析
   function gvizRows(table) {
     if (!table || !Array.isArray(table.rows)) {
       return [];
@@ -230,16 +200,10 @@
 
     return table.rows
       .map(row =>
-        (row.c || []).map((cell, index) => {
-          if (!cell) return "";
-
-          // F 欄日期優先使用試算表格式化後文字
-          if (index === 5) {
-            return cell.f ?? cell.v ?? "";
-          }
-
-          return cell.v ?? cell.f ?? "";
-        })
+        (row.c || []).map(
+          cell =>
+            cell ? (cell.f ?? cell.v ?? "") : ""
+        )
       )
       .filter(row =>
         row.some(
@@ -321,10 +285,12 @@
       url.searchParams.set("gid", SHEET_GID);
       url.searchParams.set("headers", "0");
       url.searchParams.set("tq", "select *");
+
       url.searchParams.set(
         "tqx",
         `out:json;responseHandler:${callback}`
       );
+
       url.searchParams.set("_", nonce);
 
       script.src = url.toString();
@@ -343,7 +309,7 @@
     });
   }
 
-  // CSV 解析
+  // CSV 資料解析
   function parseCsv(text) {
     const rows = [];
 
@@ -395,7 +361,7 @@
     );
   }
 
-  // 從 Google 試算表取得最新 CSV
+  // 向 Google 試算表讀取最新資料
   async function loadViaCsv() {
     const nonce =
       `${Date.now()}_${Math.random().toString(36).slice(2)}`;
@@ -426,6 +392,7 @@
 
         const text = await response.text();
 
+        // 避免把 Google 登入頁誤認為資料
         if (
           /^\s*<!doctype html|^\s*<html/i.test(text)
         ) {
@@ -439,7 +406,8 @@
         if (
           rows.length &&
           rows.some(
-            row => String(row[0] ?? "").trim() !== ""
+            row =>
+              String(row[0] ?? "").trim() !== ""
           )
         ) {
           return rows;
@@ -458,6 +426,7 @@
     );
   }
 
+  // CSV 失敗時改用 JSONP
   async function loadRows() {
     try {
       return await loadViaCsv();
@@ -477,7 +446,7 @@
     }
   }
 
-  // 讀取資料並重新安排表格欄位
+  // 讀取及整理試算表欄位
   async function loadSheetData() {
     const rows = await loadRows();
 
@@ -489,37 +458,38 @@
 
     applySiteCopy(rows);
 
-    // 顯示 A、B、C、E、F 五個欄位
-    // 跳過 D 欄存爆數量
-    headers = SOURCE_COLUMNS.map(
-      (sourceIndex, index) =>
-        String(
-          rows[0][sourceIndex] ||
-          DEFAULT_HEADERS[index]
-        ).trim()
+    // A、B、C、E、F 五個欄位
+    headers = SOURCE_COLUMN_INDEXES.map(
+      (sourceIndex, i) => {
+        const sheetHeader = String(
+          rows[0][sourceIndex] ?? ""
+        ).trim();
+
+        return sheetHeader || DEFAULT_HEADERS[i];
+      }
     );
 
-    if (headers.some(value => !value)) {
-      headers = [...DEFAULT_HEADERS];
-    }
+    // 重點修正：
+    // 最右側表頭固定顯示「更新時間」
+    // 但日期仍讀取試算表 F 欄，不會固定日期
+    headers[4] = "更新時間";
 
     records = rows.slice(1)
       .map(row => {
         const item = {};
 
-        headers.forEach((header, index) => {
-          const sourceIndex = SOURCE_COLUMNS[index];
-          const value = row[sourceIndex];
+        SOURCE_COLUMN_INDEXES.forEach(
+          (sourceIndex, i) => {
+            const raw = row[sourceIndex];
 
-          if (index === 0) {
-            item[header] =
-              String(value ?? "").trim();
-          } else if (sourceIndex === 5) {
-            item[header] = toUpdateTime(value);
-          } else {
-            item[header] = toValue(value);
+            item[headers[i]] =
+              i === 0
+                ? String(raw ?? "").trim()
+                : i === 4
+                  ? displaySheetDate(raw)
+                  : toValue(raw);
           }
-        });
+        );
 
         return item;
       })
@@ -531,12 +501,11 @@
       );
   }
 
-  // 產生表格畫面
+  // 產生網頁表格
   function renderTable(items) {
     $("#tableHead").innerHTML = headers
-      .map(
-        (header, index) =>
-          `<th class="${COLUMN_CLASSES[index] || ""}" scope="col">${escapeHtml(header)}</th>`
+      .map((header, i) =>
+        `<th class="${COLUMN_CLASSES[i]}" scope="col">${escapeHtml(i === 4 ? "更新時間" : header)}</th>`
       )
       .join("");
 
@@ -549,34 +518,36 @@
       return;
     }
 
-    body.innerHTML = items.map(item => {
-      const cells = headers.map(
-        (header, index) => {
-          const value = item[header];
+    body.innerHTML = items
+      .map(item => {
+        const cells = headers
+          .map((header, index) => {
+            const value = item[header];
 
-          const display =
-            typeof value === "number"
-              ? fmt.format(value)
-              : escapeHtml(value);
+            const display =
+              typeof value === "number"
+                ? fmt.format(value)
+                : escapeHtml(value);
 
-          const cellClass =
-            index === 0
-              ? "name-cell"
-              : index === 4
-                ? "updated-cell"
-                : "";
+            const cellClass =
+              index === 0
+                ? "name-cell"
+                : index === 4
+                  ? "updated-cell"
+                  : "";
 
-          return (
-            `<td class="${cellClass}">${display}</td>`
-          );
-        }
-      ).join("");
+            return (
+              `<td class="${cellClass}">${display}</td>`
+            );
+          })
+          .join("");
 
-      return `<tr>${cells}</tr>`;
-    }).join("");
+        return `<tr>${cells}</tr>`;
+      })
+      .join("");
   }
 
-  // 搜尋功能
+  // 搜尋
   function filterRecords() {
     const keyword =
       $("#searchInput").value.trim();
@@ -600,7 +571,7 @@
         : `目前顯示 ${filtered.length} 筆資料。`;
   }
 
-  // 定時向試算表同步最新資料
+  // 更新 Google 試算表資料
   async function refreshData() {
     if (refreshInProgress) return;
 
@@ -674,7 +645,7 @@
 
       refreshData();
 
-      // 每五分鐘向 Google 試算表取得最新資料
+      // 每五分鐘重新讀取試算表
       window.setInterval(() => {
         if (!document.hidden) {
           refreshData();
